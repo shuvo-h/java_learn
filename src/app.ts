@@ -1,8 +1,12 @@
-function names(params: number = 2) {
-  const b = 65 + params;
-  console.log(123);
+import express, { Application, Request, Response } from 'express';
+import cors from 'cors';
 
-  return b;
-}
+export const app: Application = express();
 
-names();
+// parsers
+app.use(express.json());
+app.use(cors());
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello Assignment 2!');
+});
