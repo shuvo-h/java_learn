@@ -1,5 +1,11 @@
 import { model, Schema } from 'mongoose';
-import { TAddress, TFullName, TOrders, TUser, UserStaticModel } from './user.interface';
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUser,
+  UserStaticModel,
+} from './user.interface';
 import bcrypt from 'bcrypt';
 import { env } from '../../config/configuration';
 
@@ -84,7 +90,7 @@ const orderSchema = new Schema<TOrders>({
   },
 });
 
-const userSchema = new Schema<TUser,UserStaticModel>(
+const userSchema = new Schema<TUser, UserStaticModel>(
   {
     userId: {
       type: Number,
@@ -161,34 +167,37 @@ const userSchema = new Schema<TUser,UserStaticModel>(
   // {}
 );
 
-
 // pre hook
-userSchema.pre('save', async function(next){
-  this.password = await bcrypt.hash(this.password,Number(env.BCRYPT_SALT_ROUND));
+userSchema.pre('save', async function (next) {
+  this.password = await bcrypt.hash(
+    this.password,
+    Number(env.BCRYPT_SALT_ROUND),
+  );
   next();
-})
+});
 // post hook
-userSchema.post('save', function(doc:TUser[],next){
-  (doc as {password?:string}).password = undefined;
+userSchema.post('save', function (doc: TUser[], next) {
+  (doc as { password?: string }).password = undefined;
   next();
-})
+});
 
-userSchema.post('find', function(doc:TUser[],next){
-  doc.map((el:TUser)=>{
-    (el as {password?:string}).password = undefined;
+userSchema.post('find', function (doc: TUser[], next) {
+  doc.map((el: TUser) => {
+    (el as { password?: string }).password = undefined;
   });
   next();
-})
-
+});
 
 // create custom static methods
 userSchema.statics.isUserExistByStaticMethod = async function (userId: number) {
   const existingUser = await UserModel.findOne({ userId });
   return existingUser;
 };
-userSchema.statics.isUserExistByUserNameStaticMethod = async function (username: string) {
+userSchema.statics.isUserExistByUserNameStaticMethod = async function (
+  username: string,
+) {
   const existingUser = await UserModel.findOne({ username });
   return existingUser;
 };
 
-export const UserModel = model<TUser,UserStaticModel>('User', userSchema);
+export const UserModel = model<TUser, UserStaticModel>('User', userSchema);

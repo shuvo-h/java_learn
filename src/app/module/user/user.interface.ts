@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 
 export type TFullName = {
   firstName: string;
@@ -40,13 +40,10 @@ export type TUserOptional = {
   orders?: TOrders[];
 };
 
-
-
-
 // create static method for model
-export interface UserStaticModel extends Model<TUser>{
+export interface UserStaticModel extends Model<TUser> {
   // eslint-disable-next-line no-unused-vars
-  isUserExistByStaticMethod(userId:number): Promise<TUser | null>
+  isUserExistByStaticMethod(userId: number): Promise<TUser | null>;
   // eslint-disable-next-line no-unused-vars
-  isUserExistByUserNameStaticMethod(username:string): Promise<TUser | null>
+  isUserExistByUserNameStaticMethod(username: string): Promise<TUser | null>;
 }

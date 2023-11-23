@@ -128,22 +128,23 @@ export const userZodValidateSchema = z.object({
       },
     ),
   address: addressZodValidateSchema,
-  orders: z.array(orderZodValidateSchema).refine(
-    (value) => {
-      if (Array.isArray(value)) {
-        return true;
-      }
-      return false;
-    },
-    {
-      message: 'Orders must be an array',
-    },
-  ).optional(),
+  orders: z
+    .array(orderZodValidateSchema)
+    .refine(
+      (value) => {
+        if (Array.isArray(value)) {
+          return true;
+        }
+        return false;
+      },
+      {
+        message: 'Orders must be an array',
+      },
+    )
+    .optional(),
 });
 
-
-
-// update validation schema 
+// update validation schema
 export const userZodUpdateValidateSchema = z.object({
   userId: z
     .number({ required_error: 'User ID is required' })
@@ -206,16 +207,18 @@ export const userZodUpdateValidateSchema = z.object({
     )
     .optional(),
   address: addressZodValidateSchema.optional(),
-  orders: z.array(orderZodValidateSchema).refine(
-    (value) => {
-      if (Array.isArray(value)) {
-        return true;
-      }
-      return false;
-    },
-    {
-      message: 'Orders must be an array',
-    },
-  ).optional(),
+  orders: z
+    .array(orderZodValidateSchema)
+    .refine(
+      (value) => {
+        if (Array.isArray(value)) {
+          return true;
+        }
+        return false;
+      },
+      {
+        message: 'Orders must be an array',
+      },
+    )
+    .optional(),
 });
-

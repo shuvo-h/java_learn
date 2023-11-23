@@ -8,7 +8,7 @@ export const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/users',UserRoute)
+app.use('/api/users', UserRoute);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello Assignment 2!');
