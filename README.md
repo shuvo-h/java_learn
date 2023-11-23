@@ -4,6 +4,9 @@ This is a simple TypeScript project using Express, mongoose, typescript, and bcr
 
 Module based project has been structured and Eslint and Prettier has been used to ensure the code formatting and code cleanup. 
 
+## Live URL 
+Click here to visit the root of the server [User Management](https://assignment-2-ebon.vercel.app)
+
 ## Prerequisites
 
 Make sure you have the following installed on your machine:
