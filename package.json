@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./dist/src/server.js",
+    "build": "npx tsc && node ./dist/src/server.js",
     "start:d": "npx tsc && node ./dist/src/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "watch": "npx tsc -w",
