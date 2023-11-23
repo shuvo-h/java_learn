@@ -53,7 +53,7 @@ const addressZodValidateSchema = z.object({
       { message: 'Only alphabet number and space are accepted' },
     ),
 });
-const orderZodValidateSchema = z.object({
+export const orderZodValidateSchema = z.object({
   productName: z
     .string({ required_error: 'Product name is required' })
     .trim()
