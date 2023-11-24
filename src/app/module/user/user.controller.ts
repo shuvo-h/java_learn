@@ -22,27 +22,27 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
       data: result,
     });
   } catch (error) {
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
-      const err = error.errors.map((el) => {
-        return {
-          [el.path.join('.')]: el.message,
-        };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorRes:any = {};
+      error.errors.map((el) => {
+        errorRes[el.path.join('.')] =  el.message;
       });
-      res.status(500).json({
+      errorRes.code = statusCode;
+      res.status(statusCode).json({
         success: false,
         message: 'Validation failed',
-        error: {
-          code: 500,
-          description: err || 'something went wrong',
-        },
+        error: errorRes,
       });
     } else {
-      res.status(500).json({
+      // const statusCode = (error as { statusCode: number }).statusCode || 500;
+      res.status(statusCode).json({
         success: false,
         message:
           (error as { message: string }).message || 'something went wrong',
         error: {
-          code: 500,
+          code: statusCode,
           description:
             (error as { message: string }).message || 'something went wrong',
         },
@@ -93,7 +93,7 @@ const getSingleUser = async (req: Request, res: Response): Promise<void> => {
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     res.status(statusCode).json({
       success: false,
       message: (error as { message: string }).message || 'something went wrong',
@@ -125,20 +125,18 @@ const updateSingleUser = async (req: Request, res: Response): Promise<void> => {
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
-      const err = error.errors.map((el) => {
-        return {
-          [el.path.join('.')]: el.message,
-        };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorRes:any = {};
+      error.errors.map((el) => {
+        errorRes[el.path.join('.')] =  el.message;
       });
+      errorRes.code = statusCode;
       res.status(statusCode).json({
         success: false,
         message: 'Validation failed',
-        error: {
-          code: statusCode,
-          description: err || 'something went wrong',
-        },
+        error: errorRes,
       });
     } else {
       res.status(statusCode).json({
@@ -166,7 +164,7 @@ const deleteSingleUser = async (req: Request, res: Response): Promise<void> => {
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     res.status(statusCode).json({
       success: false,
       message: (error as { message: string }).message || 'something went wrong',
@@ -196,20 +194,18 @@ const addOrderTOList = async (req: Request, res: Response): Promise<void> => {
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
-      const err = error.errors.map((el) => {
-        return {
-          [el.path.join('.')]: el.message,
-        };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorRes:any = {};
+      error.errors.map((el) => {
+        errorRes[el.path.join('.')] =  el.message;
       });
+      errorRes.code = statusCode;
       res.status(statusCode).json({
         success: false,
         message: 'Validation failed',
-        error: {
-          code: statusCode,
-          description: err || 'something went wrong',
-        },
+        error: errorRes,
       });
     } else {
       res.status(statusCode).json({
@@ -240,7 +236,7 @@ const getOrdersOfSingleuser = async (
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     res.status(statusCode).json({
       success: false,
       message: (error as { message: string }).message || 'something went wrong',
@@ -268,7 +264,7 @@ const getTotalPriceOfOrderByuserId = async (
       data: result,
     });
   } catch (error) {
-    const statusCode = (error as { ststusCode: number }).ststusCode || 500;
+    const statusCode = (error as { statusCode: number }).statusCode || 500;
     res.status(statusCode).json({
       success: false,
       message: (error as { message: string }).message || 'something went wrong',

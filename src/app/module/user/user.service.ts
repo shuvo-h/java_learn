@@ -25,7 +25,7 @@ const getSingleUserFromDB = async (userId: number): Promise<TUser | null> => {
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
 
@@ -41,7 +41,7 @@ const updateUserByUserId = async (
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
   if (userInfo.username) {
@@ -71,7 +71,7 @@ const deleteUserByUserId = async (userId: number): Promise<null> => {
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
 
@@ -90,7 +90,7 @@ const addAnOrderByUserId = async (
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
 
@@ -126,7 +126,7 @@ const getAllOrdersByUserId = async (userId: number): Promise<TUser | null> => {
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
 
@@ -142,7 +142,7 @@ const getTotalPriceOfOrderByuserId = async (
   if (!isExistUser) {
     const err = new Error('User not found');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (err as any).ststusCode = 404;
+    (err as any).statusCode = 404;
     throw err;
   }
 
