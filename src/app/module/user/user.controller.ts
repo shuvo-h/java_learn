@@ -8,6 +8,7 @@ import {
   userZodValidateSchema,
 } from './user.zod.validation';
 
+// add a new user
 const createUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = req.body;
@@ -25,9 +26,9 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
     const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errorRes:any = {};
+      const errorRes: any = {};
       error.errors.map((el) => {
-        errorRes[el.path.join('.')] =  el.message;
+        errorRes[el.path.join('.')] = el.message;
       });
       errorRes.code = statusCode;
       res.status(statusCode).json({
@@ -51,6 +52,7 @@ const createUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// get all users
 const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const selectedFields = {
@@ -79,9 +81,12 @@ const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// get a single user by user id
 const getSingleUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.userId;
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
+
     const result = await userService.getSingleUserFromDB(Number(userId));
     if (result) {
       (result as { password?: string }).password = undefined;
@@ -106,12 +111,14 @@ const getSingleUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// update a single user by userid
 const updateSingleUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.userId;
     const newInfo = req.body;
     // validate
     const newValidateInfo = userZodUpdateValidateSchema.parse(newInfo);
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
 
     const result = await userService.updateUserByUserId(
       Number(userId),
@@ -128,9 +135,9 @@ const updateSingleUser = async (req: Request, res: Response): Promise<void> => {
     const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errorRes:any = {};
+      const errorRes: any = {};
       error.errors.map((el) => {
-        errorRes[el.path.join('.')] =  el.message;
+        errorRes[el.path.join('.')] = el.message;
       });
       errorRes.code = statusCode;
       res.status(statusCode).json({
@@ -153,9 +160,11 @@ const updateSingleUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// delete a single user by userId
 const deleteSingleUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.params.userId;
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
     const result = await userService.deleteUserByUserId(Number(userId));
 
     res.status(200).json({
@@ -177,12 +186,14 @@ const deleteSingleUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// add a new order to the order list of a user
 const addOrderTOList = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId: string = req.params.userId;
     const order: TOrders = req.body;
     // validate the body
     const newValidateOrder = orderZodValidateSchema.parse(order);
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
     const result = await userService.addAnOrderByUserId(
       Number(userId),
       newValidateOrder,
@@ -197,9 +208,9 @@ const addOrderTOList = async (req: Request, res: Response): Promise<void> => {
     const statusCode = (error as { statusCode: number }).statusCode || 500;
     if (error instanceof ZodError) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errorRes:any = {};
+      const errorRes: any = {};
       error.errors.map((el) => {
-        errorRes[el.path.join('.')] =  el.message;
+        errorRes[el.path.join('.')] = el.message;
       });
       errorRes.code = statusCode;
       res.status(statusCode).json({
@@ -222,12 +233,14 @@ const addOrderTOList = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// get orders of a single order
 const getOrdersOfSingleuser = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
     const userId = req.params.userId;
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
     const result = await userService.getAllOrdersByUserId(Number(userId));
 
     res.status(200).json({
@@ -248,12 +261,15 @@ const getOrdersOfSingleuser = async (
     });
   }
 };
+
+//  get the otal pice of a users orderList by userId
 const getTotalPriceOfOrderByuserId = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
     const userId = req.params.userId;
+    if (isNaN(Number(userId))) throw new Error('Invalid user id');
     const result = await userService.getTotalPriceOfOrderByuserId(
       Number(userId),
     );

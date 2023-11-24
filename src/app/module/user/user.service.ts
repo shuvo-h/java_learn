@@ -1,6 +1,7 @@
 import { TOrders, TUser, TUserOptional } from './user.interface';
 import { UserModel } from './user.model';
 
+// create a new user to db
 const createUserIntoDb = async (user: TUser): Promise<TUser> => {
   const isExistUser = await UserModel.isUserExistByStaticMethod(user.userId);
   if (isExistUser) {
@@ -16,10 +17,13 @@ const createUserIntoDb = async (user: TUser): Promise<TUser> => {
   return result;
 };
 
+// get all users
 const getAllUserFromDB = async (fields = {}): Promise<TUser[]> => {
   const result = await UserModel.find({}, fields);
   return result;
 };
+
+// get single user by id
 const getSingleUserFromDB = async (userId: number): Promise<TUser | null> => {
   const isExistUser = await UserModel.isUserExistByStaticMethod(userId);
   if (!isExistUser) {
@@ -33,6 +37,7 @@ const getSingleUserFromDB = async (userId: number): Promise<TUser | null> => {
   return result;
 };
 
+// update a single user by userId
 const updateUserByUserId = async (
   userId: number,
   userInfo: TUserOptional,
@@ -66,6 +71,7 @@ const updateUserByUserId = async (
   return result;
 };
 
+// delete a user by userId
 const deleteUserByUserId = async (userId: number): Promise<null> => {
   const isExistUser = await UserModel.isUserExistByStaticMethod(userId);
   if (!isExistUser) {
@@ -121,6 +127,7 @@ const addAnOrderByUserId = async (
   return null;
 };
 
+// get all orders by userId
 const getAllOrdersByUserId = async (userId: number): Promise<TUser | null> => {
   const isExistUser = await UserModel.isUserExistByStaticMethod(userId);
   if (!isExistUser) {
@@ -135,6 +142,7 @@ const getAllOrdersByUserId = async (userId: number): Promise<TUser | null> => {
   return result;
 };
 
+// calculate total price of a user order
 const getTotalPriceOfOrderByuserId = async (
   userId: number,
 ): Promise<{ totalPrice: number } | null> => {
@@ -146,14 +154,24 @@ const getTotalPriceOfOrderByuserId = async (
     throw err;
   }
 
-  // const result = await UserModel.findOne({userId}).select('orders');
   const result: { totalPrice: number }[] = await UserModel.aggregate([
+    // get this users data only
     { $match: { userId } },
+
+    // desctructure the orders array
+    { $unwind: { path: '$orders' } },
+
+    // make a group based on _id and calculte the total price
     {
-      $addFields: {
-        totalPrice: { $sum: '$orders.price' },
+      $group: {
+        _id: '$_id',
+        totalPrice: {
+          $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+        },
       },
     },
+
+    // select the fields
     { $project: { totalPrice: 1 } },
   ]);
 
