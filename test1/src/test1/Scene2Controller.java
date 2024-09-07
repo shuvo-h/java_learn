@@ -13,6 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -21,6 +24,15 @@ import javafx.stage.Stage;
  * @author Biddrup Kumar Mallic
  */
 public class Scene2Controller implements Initializable {
+
+    
+    @FXML
+    private TextField name;
+    @FXML
+    private TextArea bio;
+    @FXML
+    private TextField email;
+    
 
     /**
      * Initializes the controller class.
@@ -40,5 +52,23 @@ public class Scene2Controller implements Initializable {
         stage.show(); 
         */
         Utililty.changeToScene (getClass(), event, "FXMLDocument.fxml");
+    }
+
+    @FXML
+    private void onNameChange(ActionEvent event) {
+    }
+
+    @FXML
+    private void onEmailChangeHandler(ActionEvent event) {
+    }
+
+    @FXML
+    private void handleSignupHandler(ActionEvent event) {
+        String nameValue = name.getText();
+        String emailValue = email.getText();
+        String bioValue = bio.getText();
+        //  lbWelcome.setText("Welcome"+nameValue+" "+emailValue);
+        System.out.println("Welcome"+nameValue+" "+emailValue + " " + bioValue);
+        
     }
 }
