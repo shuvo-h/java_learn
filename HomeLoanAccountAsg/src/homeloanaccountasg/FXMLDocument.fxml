@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="698.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="homeloanaccountasg.FXMLDocumentController">
+   <center>
+      <AnchorPane prefHeight="106.0" prefWidth="700.0" BorderPane.alignment="CENTER" />
+   </center>
+   <top>
+      <AnchorPane prefHeight="586.0" prefWidth="698.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="30.0" layoutY="23.0" text="Customer Details">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Label layoutX="32.0" layoutY="65.0" text="Customer ID" />
+            <Label layoutX="37.0" layoutY="101.0" text="Name" />
+            <Label layoutX="33.0" layoutY="139.0" text="Phone" />
+            <Label layoutX="35.0" layoutY="175.0" text="Email" />
+            <Label layoutX="33.0" layoutY="212.0" text="Number of accounts" />
+            <Label layoutX="35.0" layoutY="260.0" text="Action">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Button fx:id="deposite_btn" layoutX="32.0" layoutY="288.0" mnemonicParsing="false" onAction="#onDepositeAction" text="Deposit" />
+            <Button fx:id="withdraw_btn" layoutX="34.0" layoutY="321.0" mnemonicParsing="false" onAction="#onWithdrawAction" text="Withdraw" />
+            <Button fx:id="findCustomer_btn" layoutX="33.0" layoutY="357.0" mnemonicParsing="false" onAction="#findCustomerAction" text="Find Customer" />
+            <Button fx:id="findAccount_btn" layoutX="35.0" layoutY="396.0" mnemonicParsing="false" onAction="#onFindAccountAction" text="Find Account" />
+            <Button fx:id="allMonthlyInterest_btn" layoutX="34.0" layoutY="434.0" mnemonicParsing="false" onAction="#onAllMonthlyInterestAction" text="Add all monthly interests" />
+            <Button fx:id="generateReports_btn" layoutX="35.0" layoutY="471.0" mnemonicParsing="false" onAction="#onGenerateReportsAction" text="Generate Reports" />
+            <Button fx:id="clear_btn" layoutX="37.0" layoutY="509.0" mnemonicParsing="false" onAction="#clearActionHandler" text="Clear" />
+            <TextField fx:id="deposite" layoutX="125.0" layoutY="288.0" prefHeight="25.0" prefWidth="164.0" promptText="amount" />
+            <TextField fx:id="withdraw" layoutX="126.0" layoutY="321.0" prefHeight="25.0" prefWidth="163.0" promptText="amount" />
+            <Label layoutX="353.0" layoutY="23.0" text="Account Details">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Label layoutX="352.0" layoutY="65.0" text="Account Number" />
+            <Label layoutX="352.0" layoutY="101.0" text="Account Type" />
+            <Label layoutX="473.0" layoutY="280.0" text="Messages">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <TextField fx:id="customerID" layoutX="125.0" layoutY="61.0" prefHeight="25.0" prefWidth="165.0" />
+            <TextField fx:id="name" layoutX="125.0" layoutY="97.0" prefHeight="25.0" prefWidth="166.0" />
+            <TextField fx:id="phone" layoutX="126.0" layoutY="135.0" prefHeight="25.0" prefWidth="167.0" />
+            <TextField fx:id="email" layoutX="125.0" layoutY="171.0" prefHeight="25.0" prefWidth="169.0" />
+            <TextField fx:id="numberOfAccount" layoutX="160.0" layoutY="208.0" prefHeight="25.0" prefWidth="131.0" />
+            <TextField fx:id="accountNumber" layoutX="471.0" layoutY="61.0" prefHeight="25.0" prefWidth="113.0" />
+            <TextField fx:id="accountType" layoutX="471.0" layoutY="97.0" prefHeight="25.0" prefWidth="113.0" />
+            <TextArea fx:id="message" layoutX="471.0" layoutY="133.0" prefHeight="102.0" prefWidth="200.0" />
+            <Button fx:id="previous_btn" layoutX="470.0" layoutY="244.0" mnemonicParsing="false" onAction="#onPreviousAction" text="Previous" />
+            <Button fx:id="next_btn" layoutX="541.0" layoutY="245.0" mnemonicParsing="false" onAction="#onNextAction" text="Next" />
+            <Button fx:id="exit_btn" layoutX="622.0" layoutY="509.0" mnemonicParsing="false" onAction="#exitActionHandler" text="Exit" />
+            <TextArea fx:id="additionalMesage" layoutX="471.0" layoutY="307.0" prefHeight="164.0" prefWidth="200.0" />
+         </children>
+      </AnchorPane>
+   </top>
+</BorderPane>

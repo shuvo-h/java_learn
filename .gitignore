@@ -42,3 +42,7 @@ build/
 # Ignore user-specific files
 *.user.xml
 *.prefs
+/HomeLoanAccount/nbproject/private/
+/HomeLoanAccount/dist/
+/HomeLoanAccountAsg/nbproject/private/
+/HomeLoanAccountAsg/dist/
