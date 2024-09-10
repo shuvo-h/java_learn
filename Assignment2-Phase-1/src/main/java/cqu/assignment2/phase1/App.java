@@ -1,4 +1,4 @@
-package com.mycompany.homeloanbank;
+package cqu.assignment2.phase1;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +17,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"));
+        scene = new Scene(loadFXML("Customer"));
         stage.setScene(scene);
         stage.show();
     }
