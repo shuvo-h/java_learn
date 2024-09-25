@@ -7,7 +7,7 @@ public class Customer {
     private String name;
     private String phone;
     private String email;
-    private ArrayList<Account> accounts = new ArrayList<>();
+    private ArrayList<Account> accounts;
     private int currentAccount;
 
     // Constructor
@@ -16,24 +16,15 @@ public class Customer {
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.accounts = new ArrayList<>(); // Initialize accounts list
+        this.currentAccount = 0; // Initialize current account index
     }
 
-    // Getter for customer ID
+    // Getter methods for customer details
     public String getCustomerID() {
         return customerID;
     }
 
-    // Getter for accounts list
-    public ArrayList<Account> getAccounts() {
-        return accounts;
-    }
-
-    // Add account to the customer
-    public void addAccount(Account account) {
-        accounts.add(account);
-    }
-
-    // Getter methods for other customer details
     public String getName() {
         return name;
     }
@@ -45,23 +36,56 @@ public class Customer {
     public String getEmail() {
         return email;
     }
+    
+     // Get the list of accounts (add this getter to access the accounts list)
+    public ArrayList<Account> getAccounts() {
+        return accounts;
+    }
 
+    // Add an account to the customer
+    public void addAccount(Account account) {
+        accounts.add(account);
+    }
+
+    // Get number of accounts for the customer
     public int getNumberOfAccounts() {
         return accounts.size();
     }
 
-    // Placeholder methods for iterating accounts
+    // Get the first account in the list
     public Account getFirstAccount() {
-        return accounts.get(0);
+        if (accounts.size() > 0) {
+            currentAccount = 0; // Reset the current account index
+            return accounts.get(0);
+        }
+        return null; // No accounts available
     }
 
+    // Get the next account (circular navigation)
     public Account getNextAccount() {
-        return accounts.get((currentAccount + 1) % accounts.size());
+        if (accounts.size() > 0) {
+            currentAccount = (currentAccount + 1) % accounts.size();
+            return accounts.get(currentAccount);
+        }
+        return null; // No accounts available
     }
 
+    // Get the previous account (circular navigation)
     public Account getPreviousAccount() {
-        return accounts.get((currentAccount - 1 + accounts.size()) % accounts.size());
+        if (accounts.size() > 0) {
+            currentAccount = (currentAccount - 1 + accounts.size()) % accounts.size();
+            return accounts.get(currentAccount);
+        }
+        return null; // No accounts available
     }
-    
-    
+
+    // Set the current account based on accountID
+    public void setCurrentAccount(String accountID) {
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts.get(i).getAccountID().equals(accountID)) {
+                currentAccount = i; // Set the current account index
+                break;
+            }
+        }
+    }
 }

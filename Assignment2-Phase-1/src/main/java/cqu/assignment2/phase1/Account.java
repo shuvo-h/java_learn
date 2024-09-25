@@ -31,9 +31,15 @@ public abstract class Account {
         return customerID;
     }
 
-    // Abstract methods to be implemented by subclasses
+    // Abstract method to get detailed account information
     public abstract String getAccountDetails();
+
+    // Abstract method to apply monthly interest specific to each account type
     public abstract void applyMonthlyInterest();
+
+    // Abstract method to handle deposits
     public abstract void deposit(double amount);
+
+    // Abstract method to handle withdrawals
     public abstract void withdraw(double amount);
 }

@@ -13,25 +13,26 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Load FXML
+        // Load the FXML file for the GUI layout
         FXMLLoader loader = new FXMLLoader(App.class.getResource("Customer.fxml"));
         Parent root = loader.load();
         scene = new Scene(root);
 
-        // Create and load customer data
+        // Create and load customer data into the CustomerList
         CustomerList customerList = new CustomerList();
-        customerList.loadCustomerData(); // Loading initial data for testing
+        customerList.loadCustomerData(); // Load initial data for testing purposes
 
         // Inject the CustomerList object into the controller
         CustomerController controller = loader.getController();
-        controller.inject(customerList); // Pass the customerList to the controller
+        controller.inject(customerList); // Pass customerList to the controller
 
-        // Set the scene and show it
+        // Set up the stage and scene
         stage.setScene(scene);
-        stage.setTitle("Customer Account Management");
+        stage.setTitle("Customer Account Management System");
         stage.show();
     }
 
+    // Main entry point for the JavaFX application
     public static void main(String[] args) {
         launch();
     }

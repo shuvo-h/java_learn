@@ -1,6 +1,8 @@
 package cqu.assignment2.phase1;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +11,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
 
 public class CustomerController implements Initializable {
 
@@ -18,51 +23,15 @@ public class CustomerController implements Initializable {
     private int currentAccountIndex;
 
     @FXML
-    private Button deposit_btn;
+    private Button deposit_btn, withdraw_btn, findCustomer_btn, findAccount_btn, AddMonthlyInterest_btn, generateReport_btn, clear_btn, previous_btn, next_btn, exit_btn;
     @FXML
-    private Button withdraw_btn;
+    private TextField customerID, name, phone, email, numberOfAccounts, accountNumber, accountType, deposit, withdraw;
     @FXML
-    private Button findCustomer_btn;
-    @FXML
-    private Button findAccount_btn;
-    @FXML
-    private Button AddMonthlyInterest_btn;
-    @FXML
-    private Button generateReport_btn;
-    @FXML
-    private Button clear_btn;
-    @FXML
-    private Button previous_btn;
-    @FXML
-    private Button next_btn;
-    @FXML
-    private Button exit_btn;
-    @FXML
-    private TextField customerID;
-    @FXML
-    private TextField name;
-    @FXML
-    private TextField phone;
-    @FXML
-    private TextField email;
-    @FXML
-    private TextField numberOfAccounts;
-    @FXML
-    private TextField accountNumber;
-    @FXML
-    private TextField accountType;
-    @FXML
-    private TextArea accountInfo;
-    @FXML
-    private TextArea otherMessage;
-    @FXML
-    private TextField deposit;
-    @FXML
-    private TextField withdraw;
+    private TextArea accountInfo, otherMessage;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initial setup if needed
+        // Initialization if needed
     }
 
     // Inject method to receive CustomerList from App.java
@@ -82,6 +51,26 @@ public class CustomerController implements Initializable {
             displayAccount(currentCustomer.getAccounts().get(currentAccountIndex));
         } else {
             otherMessage.setText("Customer with ID " + customerId + " not found.");
+        }
+    }
+
+    // Action Listener for "Find Account" button
+    @FXML
+    private void onFindAccountAction(ActionEvent event) {
+        String accountID = accountNumber.getText();
+        currentAccount = customerList.findAccount(accountID); // Find the account in the customer list
+
+        if (currentAccount != null) {
+            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); // Find the customer who owns this account
+            if (currentCustomer != null) {
+                displayCustomer(); // Display customer details
+                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); // Set the current account index
+                displayAccount(currentAccount); // Display the current account details
+            } else {
+                otherMessage.setText("Customer not found for the account.");
+            }
+        } else {
+            otherMessage.setText("Account with ID " + accountID + " not found.");
         }
     }
 
@@ -117,67 +106,84 @@ public class CustomerController implements Initializable {
         if (account != null) {
             accountNumber.setText(account.getAccountID());
             accountType.setText(account.getType());
-            accountInfo.setText(account.getAccountDetails()); // Show detailed account information
+            accountInfo.setText(account.getAccountDetails());
+
+            // Disable withdraw button for Home Loan accounts
+            if (account instanceof HomeLoanAccount) {
+                withdraw_btn.setDisable(true);
+            } else {
+                withdraw_btn.setDisable(false);
+            }
         }
     }
 
-
-    
-    
-    
-     // Add the deposit action method
+    // Add the deposit action method
     @FXML
     private void onDepositAction(ActionEvent event) {
-        String depositAmount = deposit.getText();
-        otherMessage.setText("Deposit button clicked. Deposit amount: " + depositAmount + " - under development");
-        // Add deposit logic here later
-    }
-    
-     // Add the missing onWithdrawAction for Withdraw button
-    @FXML
-    private void onWithdrawAction(ActionEvent event) {
-        String withdrawAmount = withdraw.getText();
-        otherMessage.setText("Withdraw button clicked. Withdraw amount: " + withdrawAmount + " - under development");
-    }
-    
-    
-    @FXML
-    private void onFindAccountAction(ActionEvent event) {
-        String accountID = accountNumber.getText();
-        currentAccount = customerList.findAccount(accountID); // Find the account in the customer list
-
-        if (currentAccount != null) {
-            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); // Find the customer who owns this account
-            if (currentCustomer != null) {
-                displayCustomer(); // Display customer details
-                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); // Set the current account index
-                displayAccount(currentAccount); // Display the current account details
-            } else {
-                otherMessage.setText("Customer not found for the account.");
-            }
-        } else {
-            otherMessage.setText("Account with ID " + accountID + " not found.");
+        try {
+            double amount = Double.parseDouble(deposit.getText());
+            if (amount <= 0) throw new NumberFormatException();
+            currentAccount.deposit(amount);
+            displayAccount(currentAccount);
+            otherMessage.setText("Deposit successful.");
+        } catch (NumberFormatException e) {
+            otherMessage.setText("Invalid deposit amount.");
         }
     }
 
-    
-     // Add the monthly interest action method
+    // Add the withdraw action method
+    @FXML
+    private void onWithdrawAction(ActionEvent event) {
+        try {
+            double amount = Double.parseDouble(withdraw.getText());
+            if (amount <= 0) throw new NumberFormatException();
+            currentAccount.withdraw(amount);
+            displayAccount(currentAccount);
+            otherMessage.setText("Withdrawal successful.");
+        } catch (NumberFormatException e) {
+            otherMessage.setText("Invalid withdrawal amount.");
+        }
+    }
+
+    // Add monthly interest action method
     @FXML
     private void onAddMonthlyInterestAction(ActionEvent event) {
-        otherMessage.setText("Add Monthly Interest button clicked - under development");
-        // Add logic here later
+        customerList.applyInterestToAll();
+        displayAccount(currentCustomer.getAccounts().get(currentAccountIndex));
+        otherMessage.setText("Monthly interest applied.");
     }
-    
-    // Add the generate report button handler
+
+    // Add generate report button handler
     @FXML
     private void onGenerateReportAction(ActionEvent event) {
-        otherMessage.setText("Generate Report button clicked - under development");
-        // Add your report generation logic here
+        Date date = Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy");
+        String reportName = "ReportsForDate_" + dateFormat.format(date) + ".txt";
+
+        try (FileWriter writer = new FileWriter(reportName)) {
+            SimpleDateFormat dateStringFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String dateString = dateStringFormat.format(date);
+            
+            for (Customer customer : customerList.getCustomers().values()) {
+                writer.write("Customer ID: " + customer.getCustomerID() + " - " + dateString + "\n");
+                writer.write("Name: " + customer.getName() + "\n");
+                writer.write("Phone: " + customer.getPhone() + "\n");
+                writer.write("Email: " + customer.getEmail() + "\n");
+                writer.write("Number of Accounts: " + customer.getNumberOfAccounts() + "\n\n");
+                for (Account account : customer.getAccounts()) {
+                    writer.write(account.getAccountDetails() + "\n");
+                }
+                writer.write("\n--------------------------------------------\n");
+            }
+            otherMessage.setText("Report generated: " + reportName);
+        } catch (IOException e) {
+            otherMessage.setText("Error generating report: " + e.getMessage());
+        }
     }
-    
+
+    // Clear all fields
     @FXML
     private void onClearAction(ActionEvent event) {
-        // Clear all text fields and text areas
         customerID.clear();
         name.clear();
         phone.clear();
@@ -189,21 +195,13 @@ public class CustomerController implements Initializable {
         otherMessage.clear();
         deposit.clear();
         withdraw.clear();
-
         otherMessage.setText("All fields cleared.");
     }
-    
-    
+
+    // Exit application
     @FXML
     private void onExitAction(ActionEvent event) {
-        // Close the application
         Stage stage = (Stage) exit_btn.getScene().getWindow();
         stage.close();
     }
-    
-    
-    
-
-    
 }
-
