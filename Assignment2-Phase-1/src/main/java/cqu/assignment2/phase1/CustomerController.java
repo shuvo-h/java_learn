@@ -17,10 +17,10 @@ import java.util.Date;
 
 public class CustomerController implements Initializable {
 
-    private CustomerList customerList;
-    private Customer currentCustomer;
-    private Account currentAccount;
-    private int currentAccountIndex;
+    private CustomerList customerList;  // Reference to the CustomerList object
+    private Customer currentCustomer;   // Reference to the currently selected customer
+    private Account currentAccount;     // Reference to the currently selected account
+    private int currentAccountIndex;    // Tracks the index of the currently displayed account
 
     @FXML
     private Button deposit_btn, withdraw_btn, findCustomer_btn, findAccount_btn, AddMonthlyInterest_btn, generateReport_btn, clear_btn, previous_btn, next_btn, exit_btn;
@@ -31,10 +31,10 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Initialization if needed
+        // No initialization required for now
     }
 
-    // Inject method to receive CustomerList from App.java
+    // Method to inject the CustomerList from App.java
     public void inject(CustomerList clist) {
         this.customerList = clist;
     }
@@ -51,6 +51,7 @@ public class CustomerController implements Initializable {
             displayAccount(currentCustomer.getAccounts().get(currentAccountIndex));
         } else {
             otherMessage.setText("Customer with ID " + customerId + " not found.");
+            clearCustomerFields();  // Clear fields if customer is not found
         }
     }
 
@@ -58,19 +59,21 @@ public class CustomerController implements Initializable {
     @FXML
     private void onFindAccountAction(ActionEvent event) {
         String accountID = accountNumber.getText();
-        currentAccount = customerList.findAccount(accountID); // Find the account in the customer list
+        currentAccount = customerList.findAccount(accountID);  // Find account by ID
 
         if (currentAccount != null) {
-            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); // Find the customer who owns this account
+            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); // Find associated customer
             if (currentCustomer != null) {
-                displayCustomer(); // Display customer details
-                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); // Set the current account index
-                displayAccount(currentAccount); // Display the current account details
+                displayCustomer();
+                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); // Set current account index
+                displayAccount(currentAccount);  // Display account details
             } else {
                 otherMessage.setText("Customer not found for the account.");
+                clearCustomerFields();
             }
         } else {
             otherMessage.setText("Account with ID " + accountID + " not found.");
+            clearAccountFields();  // Clear fields if account is not found
         }
     }
 
@@ -94,6 +97,7 @@ public class CustomerController implements Initializable {
 
     // Helper method to display customer details
     private void displayCustomer() {
+        customerID.setText(currentCustomer.getCustomerID());
         name.setText(currentCustomer.getName());
         phone.setText(currentCustomer.getPhone());
         email.setText(currentCustomer.getEmail());
@@ -117,7 +121,25 @@ public class CustomerController implements Initializable {
         }
     }
 
-    // Add the deposit action method
+    // Helper method to clear customer fields
+    private void clearCustomerFields() {
+        name.clear();
+        phone.clear();
+        email.clear();
+        numberOfAccounts.clear();
+        clearAccountFields();  // Also clear account fields when customer is not found
+    }
+
+    // Helper method to clear account fields
+    private void clearAccountFields() {
+        accountNumber.clear();
+        accountType.clear();
+        accountInfo.clear();
+        deposit.clear();
+        withdraw.clear();
+    }
+
+    // Action listener for "Deposit" button
     @FXML
     private void onDepositAction(ActionEvent event) {
         try {
@@ -131,7 +153,7 @@ public class CustomerController implements Initializable {
         }
     }
 
-    // Add the withdraw action method
+    // Action listener for "Withdraw" button
     @FXML
     private void onWithdrawAction(ActionEvent event) {
         try {
@@ -145,7 +167,7 @@ public class CustomerController implements Initializable {
         }
     }
 
-    // Add monthly interest action method
+    // Action listener for "Add Monthly Interest" button
     @FXML
     private void onAddMonthlyInterestAction(ActionEvent event) {
         customerList.applyInterestToAll();
@@ -153,35 +175,60 @@ public class CustomerController implements Initializable {
         otherMessage.setText("Monthly interest applied.");
     }
 
-    // Add generate report button handler
+    // Action listener for "Generate Report" button
     @FXML
     private void onGenerateReportAction(ActionEvent event) {
         Date date = Calendar.getInstance().getTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy");
-        String reportName = "ReportsForDate_" + dateFormat.format(date) + ".txt";
+        String reportName = "ReportForDate_" + dateFormat.format(date) + ".txt";
 
         try (FileWriter writer = new FileWriter(reportName)) {
             SimpleDateFormat dateStringFormat = new SimpleDateFormat("dd/MM/yyyy");
             String dateString = dateStringFormat.format(date);
-            
+
+            // Loop through all customers in the customer list
             for (Customer customer : customerList.getCustomers().values()) {
-                writer.write("Customer ID: " + customer.getCustomerID() + " - " + dateString + "\n");
-                writer.write("Name: " + customer.getName() + "\n");
-                writer.write("Phone: " + customer.getPhone() + "\n");
-                writer.write("Email: " + customer.getEmail() + "\n");
-                writer.write("Number of Accounts: " + customer.getNumberOfAccounts() + "\n\n");
+                writer.write("Date: " + dateString + "\tCustomer ID: " + customer.getCustomerID() + "\t Name: " + customer.getName() + "\n\n");
+
+                // Loop through each account for the customer
                 for (Account account : customer.getAccounts()) {
-                    writer.write(account.getAccountDetails() + "\n");
+                    writer.write("Account ID: " + account.getAccountID() + "\t Type: " + account.getType() + "\n");
+
+                    // Account details based on type of account
+                    if (account instanceof HomeLoanAccount) {
+                        HomeLoanAccount homeLoan = (HomeLoanAccount) account;
+                        writer.write("Amount Owing: $" + String.format("%.2f", homeLoan.getAmountOwing()) + "\n");
+                        writer.write("Interest Rate: " + String.format("%.4f", homeLoan.getMonthlyInterestRate() * 12 * 100) + "\n");
+                        writer.write("Monthly Interest Charged: $" + String.format("%.2f", homeLoan.getInterestCharged()) + "\n");
+                        writer.write("Original Loan Amount: $" + String.format("%.2f", homeLoan.getOriginalLoan()) + "\n");
+                        writer.write("Loan Start Date: " + homeLoan.getStartDate() + "\n");
+                        writer.write("Duration of Loan: " + homeLoan.getLoanDuration() + " years\n\n");
+                    } else if (account instanceof GoalSaverAccount) {
+                        GoalSaverAccount goalSaver = (GoalSaverAccount) account;
+                        writer.write("Account Balance: $" + String.format("%.2f", goalSaver.getBalance()) + "\n");
+                        writer.write("Balance at start of month: $" + String.format("%.2f", goalSaver.getStartOfMonthBalance()) + "\n");
+                        writer.write("Last Interest Earned: $" + String.format("%.2f", goalSaver.getInterestEarned()) + "\n");
+                        writer.write("Interest Rate: " + String.format("%.4f", goalSaver.getMonthlyInterestRate() * 12 * 100) + "\n\n");
+                    } else if (account instanceof DailyAccessAccount) {
+                        DailyAccessAccount dailyAccess = (DailyAccessAccount) account;
+                        writer.write("Account Balance: $" + String.format("%.2f", dailyAccess.getBalance()) + "\n");
+                        writer.write("Minimum Monthly Balance: $" + String.format("%.2f", dailyAccess.getMinimumBalance()) + "\n");
+                        writer.write("Last Interest Earned: $" + String.format("%.2f", dailyAccess.getInterestEarned()) + "\n");
+                        writer.write("Interest Rate: " + String.format("%.4f", dailyAccess.getMonthlyInterestRate() * 12 * 100) + "\n\n");
+                    }
+
+                    
                 }
-                writer.write("\n--------------------------------------------\n");
+                writer.write("====================================================================\n");
             }
+
             otherMessage.setText("Report generated: " + reportName);
         } catch (IOException e) {
             otherMessage.setText("Error generating report: " + e.getMessage());
         }
     }
 
-    // Clear all fields
+    // Action listener for "Clear" button
     @FXML
     private void onClearAction(ActionEvent event) {
         customerID.clear();
@@ -198,7 +245,7 @@ public class CustomerController implements Initializable {
         otherMessage.setText("All fields cleared.");
     }
 
-    // Exit application
+    // Action listener for "Exit" button
     @FXML
     private void onExitAction(ActionEvent event) {
         Stage stage = (Stage) exit_btn.getScene().getWindow();

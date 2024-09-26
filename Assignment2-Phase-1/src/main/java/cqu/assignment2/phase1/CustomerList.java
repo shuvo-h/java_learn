@@ -6,48 +6,96 @@ public class CustomerList {
     private HashMap<String, Customer> customers; // HashMap for customers, key is customerID
     private HashMap<String, Account> accounts;   // HashMap for accounts, key is accountID
 
-    // Constructor
+    // Constructor to initialize the HashMaps
     public CustomerList() {
         customers = new HashMap<>();
         accounts = new HashMap<>();
     }
 
-    // Load customer and account data (hardcoded for testing)
+    // Load customer and account data as described in Appendix A
+    public void loadCustomerData(){
+        // create three customers
+       Customer cust1 = new Customer("C0001", "John Smith", "0412345678", "j.smith@cqumail.com");
+       Customer cust2 = new Customer("C0002", "Mary Brown","0412456789","m.brown@cqumail.com");
+       Customer cust3 = new Customer("C0003", "Peter Green", "0412567890", "p.green@cqumail.com");
+        
+        // add them to the HashMap of customers
+        customers.put("C0001", cust1);
+        customers.put("C0002", cust2);
+        customers.put("C0003", cust3);
+        
+        // create 7 accounts and add them to the HashMap of accounts
+        Account acct1 = new HomeLoanAccount("HL0001", "C0001",  0.0005, 800000, 30, "01/01/2024" );
+        accounts.put("HL0001", acct1);
+        Account acct2 = new HomeLoanAccount("HL0002", "C0003", 0.0005, 600000, 20, "01/03/2024" );
+        accounts.put("HL0002", acct2);
+        Account acct3 = new GoalSaverAccount("GS0001", "C0002", 0.0075, 2000 );
+        accounts.put("GS0001", acct3);
+        Account acct4 = new GoalSaverAccount("GS0002", "C0003", 0.0075, 10000 );
+        accounts.put("GS0002", acct4);
+        Account acct5 = new DailyAccessAccount("DA0001", "C0003", 0.0025, 400 );
+        accounts.put("DA0001", acct5);
+        Account acct6 = new DailyAccessAccount("DA0002", "C0002", 0.0025, 1000 );
+        accounts.put("DA0002", acct6);
+        Account acct7 = new DailyAccessAccount("DA0003", "C0001", 0.0025, 3000 );
+        accounts.put("DA0003", acct7);
+     
+        // add accounts to the customers.
+        cust1.addAccount(acct1);
+        cust1.addAccount(acct7);
+        cust2.addAccount(acct3);
+        cust2.addAccount(acct6);
+        cust3.addAccount(acct2);
+        cust3.addAccount(acct4);
+        cust3.addAccount(acct5);
+    }
+    /*
     public void loadCustomerData() {
-        // Create accounts for Customer 1
-        Account account1 = new DailyAccessAccount("A0001", "C0001", "DailyAccess", 0.01, 1000);
-        Account account2 = new GoalSaverAccount("A0002", "C0001", "GoalSaver", 0.02, 1500, 1200);
-
-        // Create Customer 1
-        Customer customer1 = new Customer("C0001", "John Doe", "123-4567", "john@example.com");
-        customer1.addAccount(account1);
-        customer1.addAccount(account2);
-
-        // Create an account for Customer 2
-        Account account3 = new HomeLoanAccount("A0003", "C0002", "HomeLoan", 0.03, 200000, 30, "01-01-2022");
-
-        // Create Customer 2
-        Customer customer2 = new Customer("C0002", "Jane Smith", "987-6543", "jane@example.com");
-        customer2.addAccount(account3);
+        // Create three customers
+        Customer cust1 = new Customer("C0001", "John Smith", "0412345678", "j.smith@cqumail.com");
+        Customer cust2 = new Customer("C0002", "Mary Brown", "0412456789", "m.brown@cqumail.com");
+        Customer cust3 = new Customer("C0003", "Peter Green", "0412567890", "p.green@cqumail.com");
 
         // Add customers to the HashMap
-        customers.put(customer1.getCustomerID(), customer1);
-        customers.put(customer2.getCustomerID(), customer2);
+        customers.put("C0001", cust1);
+        customers.put("C0002", cust2);
+        customers.put("C0003", cust3);
 
-        // Add accounts to the HashMap
-        accounts.put(account1.getAccountID(), account1);
-        accounts.put(account2.getAccountID(), account2);
-        accounts.put(account3.getAccountID(), account3);
+        // Create accounts and add them to the HashMap
+        Account acct1 = new HomeLoanAccount("HL0001", "C0001", 0.0005, 800000, 30, "01/01/2024");
+        accounts.put("HL0001", acct1);
+        Account acct2 = new HomeLoanAccount("HL0002", "C0003", 0.0005, 600000, 20, "01/03/2024");
+        accounts.put("HL0002", acct2);
+        Account acct3 = new GoalSaverAccount("GS0001", "C0002", 0.0075, 2000);
+        accounts.put("GS0001", acct3);
+        Account acct4 = new GoalSaverAccount("GS0002", "C0003", 0.0075, 10000);
+        accounts.put("GS0002", acct4);
+        Account acct5 = new DailyAccessAccount("DA0001", "C0003", 0.0025, 400);
+        accounts.put("DA0001", acct5);
+        Account acct6 = new DailyAccessAccount("DA0002", "C0002", 0.0025, 1000);
+        accounts.put("DA0002", acct6);
+        Account acct7 = new DailyAccessAccount("DA0003", "C0001", 0.0025, 3000);
+        accounts.put("DA0003", acct7);
+
+        // Link accounts to the corresponding customers
+        cust1.addAccount(acct1);
+        cust1.addAccount(acct7);
+        cust2.addAccount(acct3);
+        cust2.addAccount(acct6);
+        cust3.addAccount(acct2);
+        cust3.addAccount(acct4);
+        cust3.addAccount(acct5);
     }
+    */
 
-    // Find a customer by customerID
+    // Find a customer by their customerID
     public Customer findCustomer(String customerID) {
-        return customers.get(customerID); // Returns null if customer not found
+        return customers.get(customerID); // Returns null if customer is not found
     }
 
-    // Find an account by accountID
+    // Find an account by its accountID
     public Account findAccount(String accountID) {
-        return accounts.get(accountID); // Returns null if account not found
+        return accounts.get(accountID); // Returns null if account is not found
     }
 
     // Apply monthly interest to all accounts

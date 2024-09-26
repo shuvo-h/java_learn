@@ -1,30 +1,30 @@
 package cqu.assignment2.phase1;
 
 public class HomeLoanAccount extends Account {
-    private double originalLoan;       // The original loan amount
-    private double amountOwing;        // The current amount owing
-    private int loanDuration;          // Duration of the loan in years
-    private String startDate;          // Start date of the loan
-    private double interestCharged;    // Last amount of interest charged
+    private final double originalLoan;  // The original loan amount (final because it doesn't change)
+    private double amountOwing;         // The current amount owing
+    private int loanDuration;           // Duration of the loan in years
+    private String startDate;           // Start date of the loan
+    private double interestCharged;     // Last amount of interest charged
 
     // Constructor
-    public HomeLoanAccount(String accountID, String customerID, String type, double interestRate, double originalLoan, int duration, String startDate) {
-        super(accountID, customerID, type, interestRate);
-        this.originalLoan = originalLoan;
-        this.amountOwing = originalLoan; // Initially, the amount owing is the same as the original loan amount
-        this.loanDuration = duration;
-        this.startDate = startDate;
-        this.interestCharged = 0.0;
+    public HomeLoanAccount(String accountID, String customerID, double interestRate, double originalLoan, int duration, String startDate) {
+        super(accountID, customerID, "Home Loan", interestRate);
+        this.originalLoan = originalLoan;     // Original loan amount
+        this.amountOwing = originalLoan;      // Initially, the amount owing is the original loan amount
+        this.loanDuration = duration;         // Duration of the loan in years
+        this.startDate = startDate;           // Start date of the loan
+        this.interestCharged = 0.0;           // Initially, no interest charged
     }
 
     // Get detailed information about the account using StringBuilder
     @Override
     public String getAccountDetails() {
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("Original Loan: $%.2f%n", originalLoan));
+        sb.append(String.format("Original Loan Amount: $%.2f%n", originalLoan));
         sb.append(String.format("Amount Owing: $%.2f%n", amountOwing));
-        sb.append(String.format("Interest Charged: $%.2f%n", interestCharged));
-        sb.append(String.format("Annual Interest Rate: %.2f%%%n", getMonthlyInterestRate() * 12 * 100)); // Annual rate
+        sb.append(String.format("Last Interest Charged: $%.2f%n", interestCharged));
+        sb.append(String.format("Annual Interest Rate: %.2f%%%n", getMonthlyInterestRate() * 12 * 100)); // Convert monthly to annual rate
         sb.append(String.format("Loan Duration: %d years%n", loanDuration));
         sb.append(String.format("Loan Start Date: %s%n", startDate));
         return sb.toString();
@@ -33,21 +33,51 @@ public class HomeLoanAccount extends Account {
     // Apply monthly interest
     @Override
     public void applyMonthlyInterest() {
-        // Interest is charged on the amount owing
+        // Interest is charged on the current amount owing
         double interest = amountOwing * getMonthlyInterestRate();
         interestCharged = interest;
         amountOwing += interest; // Add the interest to the amount owing
     }
 
-    // Deposit money to the account (payment reduces the amount owing)
+    // Deposit money to the account (loan repayment reduces the amount owing)
     @Override
     public void deposit(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be greater than 0");
+        }
         amountOwing -= amount; // Deduct deposit from amount owing (loan repayment)
+        if (amountOwing < 0) {
+            amountOwing = 0; // Ensure no negative owing amount
+        }
     }
 
-    // Withdraw money from the account (this is unusual but allowed in this case)
+    // Withdraw money from the account (disabled in the GUI, but required for testing purposes)
     @Override
     public void withdraw(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be greater than 0");
+        }
         amountOwing += amount; // Increase the amount owing by the withdrawal amount
+    }
+
+    // Getters for various attributes
+    public double getAmountOwing() {
+        return amountOwing;
+    }
+
+    public double getOriginalLoan() {
+        return originalLoan;
+    }
+
+    public double getInterestCharged() {
+        return interestCharged;
+    }
+
+    public int getLoanDuration() {
+        return loanDuration;
+    }
+
+    public String getStartDate() {
+        return startDate;
     }
 }

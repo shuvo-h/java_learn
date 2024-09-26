@@ -3,14 +3,14 @@ package cqu.assignment2.phase1;
 import java.util.ArrayList;
 
 public class Customer {
-    private String customerID;
-    private String name;
-    private String phone;
-    private String email;
-    private ArrayList<Account> accounts;
-    private int currentAccount;
+    private String customerID;           // Unique customer ID
+    private String name;                 // Customer name
+    private String phone;                // Customer phone number
+    private String email;                // Customer email address
+    private ArrayList<Account> accounts; // List of accounts for the customer
+    private int currentAccount;          // Index of the currently viewed account
 
-    // Constructor
+    // Constructor to initialize customer details and the list of accounts
     public Customer(String customerID, String name, String phone, String email) {
         this.customerID = customerID;
         this.name = name;
@@ -36,8 +36,8 @@ public class Customer {
     public String getEmail() {
         return email;
     }
-    
-     // Get the list of accounts (add this getter to access the accounts list)
+
+    // Get the list of accounts for the customer
     public ArrayList<Account> getAccounts() {
         return accounts;
     }
@@ -47,45 +47,51 @@ public class Customer {
         accounts.add(account);
     }
 
-    // Get number of accounts for the customer
+    // Get the number of accounts associated with this customer
     public int getNumberOfAccounts() {
         return accounts.size();
     }
 
-    // Get the first account in the list
+    // Get the first account in the list (used for initial display of account details)
     public Account getFirstAccount() {
         if (accounts.size() > 0) {
-            currentAccount = 0; // Reset the current account index
+            currentAccount = 0; // Reset the current account index to the first account
             return accounts.get(0);
         }
-        return null; // No accounts available
+        return null; // Return null if no accounts are available
     }
 
-    // Get the next account (circular navigation)
+    // Get the next account (circular navigation through the list of accounts)
     public Account getNextAccount() {
         if (accounts.size() > 0) {
-            currentAccount = (currentAccount + 1) % accounts.size();
+            currentAccount = (currentAccount + 1) % accounts.size(); // Circular increment
             return accounts.get(currentAccount);
         }
-        return null; // No accounts available
+        return null; // Return null if no accounts are available
     }
 
-    // Get the previous account (circular navigation)
+    // Get the previous account (circular navigation through the list of accounts)
     public Account getPreviousAccount() {
         if (accounts.size() > 0) {
-            currentAccount = (currentAccount - 1 + accounts.size()) % accounts.size();
+            currentAccount = (currentAccount - 1 + accounts.size()) % accounts.size(); // Circular decrement
             return accounts.get(currentAccount);
         }
-        return null; // No accounts available
+        return null; // Return null if no accounts are available
     }
 
-    // Set the current account based on accountID
+    // Set the current account based on accountID (to facilitate searching by account ID)
     public void setCurrentAccount(String accountID) {
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getAccountID().equals(accountID)) {
-                currentAccount = i; // Set the current account index
+                currentAccount = i; // Update the current account index to match the found account
                 break;
             }
         }
+    }
+
+    // Optional: toString method for easier debugging and testing (not required in the assignment)
+    @Override
+    public String toString() {
+        return "CustomerID: " + customerID + ", Name: " + name + ", Phone: " + phone + ", Email: " + email;
     }
 }
