@@ -1,4 +1,4 @@
-package cqu.assignment2.phase1;
+package cqu.customeraccountmanagement;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;

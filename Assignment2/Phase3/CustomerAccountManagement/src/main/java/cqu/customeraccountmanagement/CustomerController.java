@@ -1,4 +1,4 @@
-package cqu.assignment2.phase1;
+package cqu.customeraccountmanagement;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -159,96 +159,25 @@ public class CustomerController implements Initializable {
     // Action listener for "Deposit" button
     @FXML
     private void onDepositAction(ActionEvent event) {
-        if (currentAccount == null) {
-            otherMessage.setText("No account selected. Please find an account before making a deposit.");
-            return;
-        }
-        try {
-            double amount = Double.parseDouble(deposit.getText());
-            if (amount <= 0) throw new NumberFormatException();
-            currentAccount.deposit(amount);
-            displayAccount(currentAccount);
-            otherMessage.setText("Deposit successful.");
-        } catch (NumberFormatException e) {
-            otherMessage.setText("Invalid deposit amount.");
-        }
+        otherMessage.setText("Deposit button clicked - under development");
     }
 
     // Action listener for "Withdraw" button
     @FXML
     private void onWithdrawAction(ActionEvent event) {
-        try {
-            double amount = Double.parseDouble(withdraw.getText());
-            if (amount <= 0) throw new NumberFormatException();
-            currentAccount.withdraw(amount);
-            displayAccount(currentAccount);
-            otherMessage.setText("Withdrawal successful.");
-        } catch (NumberFormatException e) {
-            otherMessage.setText("Invalid withdrawal amount.");
-        }catch (IllegalArgumentException e) {
-            otherMessage.setText(e.getMessage());  
-        }
+        otherMessage.setText("Withdraw button clicked - under development");
     }
 
     // Action listener for "Add Monthly Interest" button
     @FXML
     private void onAddMonthlyInterestAction(ActionEvent event) {
-        customerList.applyInterestToAll();
-        displayAccount(currentCustomer.getAccounts().get(currentAccountIndex));
-        otherMessage.setText("Monthly interest applied.");
+          otherMessage.setText("Add Monthly Interest button clicked - under development");
     }
 
     // Action listener for "Generate Report" button
     @FXML
     private void onGenerateReportAction(ActionEvent event) {
-        Date date = Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy");
-        String reportName = "ReportForDate_" + dateFormat.format(date) + ".txt";
-
-        try (FileWriter writer = new FileWriter(reportName)) {
-            SimpleDateFormat dateStringFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String dateString = dateStringFormat.format(date);
-
-            // Loop through all customers in the customer list
-            for (Customer customer : customerList.getCustomers().values()) {
-                writer.write("Date: " + dateString + "\tCustomer ID: " + customer.getCustomerID() + "\t Name: " + customer.getName() + "\n\n");
-
-                // Loop through each account for the customer
-                for (Account account : customer.getAccounts()) {
-                    writer.write("Account ID: " + account.getAccountID() + "\t Type: " + account.getType() + "\n");
-
-                    // Account details based on type of account
-                    if (account instanceof HomeLoanAccount) {
-                        HomeLoanAccount homeLoan = (HomeLoanAccount) account;
-                        writer.write("Amount Owing: $" + String.format("%.2f", homeLoan.getAmountOwing()) + "\n");
-                        writer.write("Interest Rate: " + String.format("%.4f", homeLoan.getMonthlyInterestRate() * 12 * 100) + "\n");
-                        writer.write("Monthly Interest Charged: $" + String.format("%.2f", homeLoan.getInterestCharged()) + "\n");
-                        writer.write("Original Loan Amount: $" + String.format("%.2f", homeLoan.getOriginalLoan()) + "\n");
-                        writer.write("Loan Start Date: " + homeLoan.getStartDate() + "\n");
-                        writer.write("Duration of Loan: " + homeLoan.getLoanDuration() + " years\n\n");
-                    } else if (account instanceof GoalSaverAccount) {
-                        GoalSaverAccount goalSaver = (GoalSaverAccount) account;
-                        writer.write("Account Balance: $" + String.format("%.2f", goalSaver.getBalance()) + "\n");
-                        writer.write("Balance at start of month: $" + String.format("%.2f", goalSaver.getStartOfMonthBalance()) + "\n");
-                        writer.write("Last Interest Earned: $" + String.format("%.2f", goalSaver.getInterestEarned()) + "\n");
-                        writer.write("Interest Rate: " + String.format("%.4f", goalSaver.getMonthlyInterestRate() * 12 * 100) + "\n\n");
-                    } else if (account instanceof DailyAccessAccount) {
-                        DailyAccessAccount dailyAccess = (DailyAccessAccount) account;
-                        writer.write("Account Balance: $" + String.format("%.2f", dailyAccess.getBalance()) + "\n");
-                        writer.write("Minimum Monthly Balance: $" + String.format("%.2f", dailyAccess.getMinimumBalance()) + "\n");
-                        writer.write("Last Interest Earned: $" + String.format("%.2f", dailyAccess.getInterestEarned()) + "\n");
-                        writer.write("Interest Rate: " + String.format("%.4f", dailyAccess.getMonthlyInterestRate() * 12 * 100) + "\n\n");
-                    }
-
-                    
-                }
-                writer.write("====================================================================\n");
-            }
-
-            otherMessage.setText("Report generated: " + reportName);
-        } catch (IOException e) {
-            otherMessage.setText("Error generating report: " + e.getMessage());
-        }
+        otherMessage.setText("Generate Report button clicked - under development");
     }
 
     // Action listener for "Clear" button
