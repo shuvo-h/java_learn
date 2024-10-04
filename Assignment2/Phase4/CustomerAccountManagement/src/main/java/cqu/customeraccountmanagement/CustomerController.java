@@ -177,6 +177,10 @@ public class CustomerController implements Initializable {
     // Action listener for "Withdraw" button
     @FXML
     private void onWithdrawAction(ActionEvent event) {
+         if (currentAccount == null) {
+            otherMessage.setText("No account selected. Please find an account before making a withdrawal.");
+            return;
+        }
         try {
             double amount = Double.parseDouble(withdraw.getText());
             if (amount <= 0) throw new NumberFormatException();
@@ -193,7 +197,9 @@ public class CustomerController implements Initializable {
     // Action listener for "Add Monthly Interest" button
     @FXML
     private void onAddMonthlyInterestAction(ActionEvent event) {
-        otherMessage.setText("Add Monthly Interest button clicked - under development");
+        customerList.applyInterestToAll();
+        displayAccount(currentCustomer.getAccounts().get(currentAccountIndex));
+        otherMessage.setText("Monthly interest applied.");
     }
 
     // Action listener for "Generate Report" button

@@ -177,6 +177,10 @@ public class CustomerController implements Initializable {
     // Action listener for "Withdraw" button
     @FXML
     private void onWithdrawAction(ActionEvent event) {
+         if (currentAccount == null) {
+            otherMessage.setText("No account selected. Please find an account before making a withdrawal.");
+            return;
+        }
         try {
             double amount = Double.parseDouble(withdraw.getText());
             if (amount <= 0) throw new NumberFormatException();
