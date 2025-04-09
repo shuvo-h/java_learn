@@ -17,10 +17,10 @@ import java.util.Date;
 
 public class CustomerController implements Initializable {
 
-    private CustomerList customerList;  // Reference to the CustomerList object
-    private Customer currentCustomer;   // Reference to the currently selected customer
-    private Account currentAccount;     // Reference to the currently selected account
-    private int currentAccountIndex;    // Tracks the index of the currently displayed account
+    private CustomerList customerList;  
+    private Customer currentCustomer;   
+    private Account currentAccount;     
+    private int currentAccountIndex;    
 
     @FXML
     private Button deposit_btn, withdraw_btn, findCustomer_btn, findAccount_btn, AddMonthlyInterest_btn, generateReport_btn, clear_btn, previous_btn, next_btn, exit_btn;
@@ -48,18 +48,21 @@ public class CustomerController implements Initializable {
         if (currentCustomer != null) {
             displayCustomer();
             if (!currentCustomer.getAccounts().isEmpty()) {
-                currentAccountIndex = 0; // Start with the first account
-                currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); // Set the current account to the first one
-                displayAccount(currentAccount); // Display the first account
+                currentAccountIndex = 0; 
+                currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); 
+                displayAccount(currentAccount); 
+                updateAccountNavigationButtons();
             } else {
-                currentAccount = null; // No accounts available
+                currentAccount = null; 
                 otherMessage.setText("Customer found, but no accounts available.");
                 clearAccountFields();
+                updateAccountNavigationButtons();
             }
         } else {
             otherMessage.setText("Customer with ID " + customerId + " not found.");
-            clearCustomerFields(); // Clear fields if customer is not found
-            currentAccount = null; // Reset currentAccount to null
+            clearCustomerFields(); 
+            currentAccount = null; 
+            updateAccountNavigationButtons();
         }
     }
 
@@ -68,21 +71,24 @@ public class CustomerController implements Initializable {
     @FXML
     private void onFindAccountAction(ActionEvent event) {
         String accountID = accountNumber.getText();
-        currentAccount = customerList.findAccount(accountID);  // Find account by ID
+        currentAccount = customerList.findAccount(accountID); 
 
         if (currentAccount != null) {
-            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); // Find associated customer
+            currentCustomer = customerList.findCustomer(currentAccount.getCustomerID()); 
             if (currentCustomer != null) {
                 displayCustomer();
-                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); // Set current account index
-                displayAccount(currentAccount);  // Display account details
+                currentAccountIndex = currentCustomer.getAccounts().indexOf(currentAccount); 
+                displayAccount(currentAccount);  
+                updateAccountNavigationButtons();
             } else {
                 otherMessage.setText("Customer not found for the account.");
                 clearCustomerFields();
+                updateAccountNavigationButtons();
             }
         } else {
             otherMessage.setText("Account with ID " + accountID + " not found.");
-            clearAccountFields();  // Clear fields if account is not found
+            clearAccountFields();  
+            updateAccountNavigationButtons();
         }
     }
 
@@ -90,9 +96,10 @@ public class CustomerController implements Initializable {
     @FXML
     private void onNextAction(ActionEvent event) {
          if (currentCustomer != null && !currentCustomer.getAccounts().isEmpty()) {
-            currentAccountIndex = (currentAccountIndex + 1) % currentCustomer.getAccounts().size(); // Circular increment
-            currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); // Update currentAccount
-            displayAccount(currentAccount); // Display the newly selected account
+            currentAccountIndex = (currentAccountIndex + 1) % currentCustomer.getAccounts().size(); 
+            currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); 
+            displayAccount(currentAccount); 
+            updateAccountNavigationButtons(); 
             otherMessage.setText("Showing next account.");
         } else {
             otherMessage.setText("No accounts available or customer not selected.");
@@ -103,13 +110,26 @@ public class CustomerController implements Initializable {
     @FXML
     private void onPreviousAction(ActionEvent event) {
         if (currentCustomer != null && !currentCustomer.getAccounts().isEmpty()) {
-            currentAccountIndex = (currentAccountIndex - 1 + currentCustomer.getAccounts().size()) % currentCustomer.getAccounts().size(); // Circular decrement
-            currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); // Update currentAccount
-            displayAccount(currentAccount); // Display the newly selected account
+            currentAccountIndex = (currentAccountIndex - 1 + currentCustomer.getAccounts().size()) % currentCustomer.getAccounts().size(); 
+            currentAccount = currentCustomer.getAccounts().get(currentAccountIndex); 
+            displayAccount(currentAccount); 
+            updateAccountNavigationButtons(); 
             otherMessage.setText("Showing previous account.");
         } else {
             otherMessage.setText("No accounts available or customer not selected.");
         }
+    }
+    
+    // Helper method to update the state of Next and Previous buttons
+    private void updateAccountNavigationButtons() {
+        previous_btn.setDisable(currentAccountIndex == 0 && currentCustomer.getAccounts().size() == 1); 
+        next_btn.setDisable(currentAccountIndex == currentCustomer.getAccounts().size() - 1 && currentCustomer.getAccounts().size() == 1); 
+    }
+
+    // Helper method to disable account navigation buttons
+    private void disableAccountNavigationButtons() {
+        previous_btn.setDisable(true);
+        next_btn.setDisable(true);
     }
 
     // Helper method to display customer details
@@ -144,7 +164,7 @@ public class CustomerController implements Initializable {
         phone.clear();
         email.clear();
         numberOfAccounts.clear();
-        clearAccountFields();  // Also clear account fields when customer is not found
+        clearAccountFields();  
     }
 
     // Helper method to clear account fields

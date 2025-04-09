@@ -1,20 +1,20 @@
 package cqu.customeraccountmanagement;
 
 public class HomeLoanAccount extends Account {
-    private final double originalLoan;  // The original loan amount (final because it doesn't change)
-    private double amountOwing;         // The current amount owing
-    private int loanDuration;           // Duration of the loan in years
-    private String startDate;           // Start date of the loan
-    private double interestCharged;     // Last amount of interest charged
+    private final double originalLoan;  
+    private double amountOwing;         
+    private int loanDuration;           
+    private String startDate;           
+    private double interestCharged;     
 
     // Constructor
     public HomeLoanAccount(String accountID, String customerID, double interestRate, double originalLoan, int duration, String startDate) {
         super(accountID, customerID, "Home Loan", interestRate);
-        this.originalLoan = originalLoan;     // Original loan amount
-        this.amountOwing = originalLoan;      // Initially, the amount owing is the original loan amount
-        this.loanDuration = duration;         // Duration of the loan in years
-        this.startDate = startDate;           // Start date of the loan
-        this.interestCharged = 0.0;           // Initially, no interest charged
+        this.originalLoan = originalLoan;     
+        this.amountOwing = originalLoan;      
+        this.loanDuration = duration;         
+        this.startDate = startDate;           
+        this.interestCharged = 0.0;           
     }
 
     // Get detailed information about the account using StringBuilder
@@ -36,7 +36,7 @@ public class HomeLoanAccount extends Account {
         // Interest is charged on the current amount owing
         double interest = amountOwing * getMonthlyInterestRate();
         interestCharged = interest;
-        amountOwing += interest; // Add the interest to the amount owing
+        amountOwing += interest; 
     }
 
     // Deposit money to the account (loan repayment reduces the amount owing)
@@ -45,9 +45,9 @@ public class HomeLoanAccount extends Account {
         if (amount <= 0) {
             throw new IllegalArgumentException("Deposit amount must be greater than 0");
         }
-        amountOwing -= amount; // Deduct deposit from amount owing (loan repayment)
+        amountOwing -= amount; 
         if (amountOwing < 0) {
-            amountOwing = 0; // Ensure no negative owing amount
+            amountOwing = 0; 
         }
     }
 
@@ -57,7 +57,7 @@ public class HomeLoanAccount extends Account {
         if (amount <= 0) {
             throw new IllegalArgumentException("Withdrawal amount must be greater than 0");
         }
-        amountOwing += amount; // Increase the amount owing by the withdrawal amount
+        amountOwing += amount; 
     }
 
     // Getters for various attributes

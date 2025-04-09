@@ -3,12 +3,12 @@ package cqu.customeraccountmanagement;
 import java.util.ArrayList;
 
 public class Customer {
-    private String customerID;           // Unique customer ID
-    private String name;                 // Customer name
-    private String phone;                // Customer phone number
-    private String email;                // Customer email address
-    private ArrayList<Account> accounts; // List of accounts for the customer
-    private int currentAccount;          // Index of the currently viewed account
+    private String customerID;          
+    private String name;                 
+    private String phone;                
+    private String email;                
+    private ArrayList<Account> accounts; 
+    private int currentAccount;          
 
     // Constructor to initialize customer details and the list of accounts
     public Customer(String customerID, String name, String phone, String email) {
@@ -16,8 +16,8 @@ public class Customer {
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.accounts = new ArrayList<>(); // Initialize accounts list
-        this.currentAccount = 0; // Initialize current account index
+        this.accounts = new ArrayList<>(); 
+        this.currentAccount = 0;
     }
 
     // Getter methods for customer details
@@ -55,7 +55,7 @@ public class Customer {
     // Get the first account in the list (used for initial display of account details)
     public Account getFirstAccount() {
         if (accounts.size() > 0) {
-            currentAccount = 0; // Reset the current account index to the first account
+            currentAccount = 0; 
             return accounts.get(0);
         }
         return null; // Return null if no accounts are available
@@ -64,26 +64,26 @@ public class Customer {
     // Get the next account (circular navigation through the list of accounts)
     public Account getNextAccount() {
         if (accounts.size() > 0) {
-            currentAccount = (currentAccount + 1) % accounts.size(); // Circular increment
+            currentAccount = (currentAccount + 1) % accounts.size(); 
             return accounts.get(currentAccount);
         }
-        return null; // Return null if no accounts are available
+        return null; 
     }
 
     // Get the previous account (circular navigation through the list of accounts)
     public Account getPreviousAccount() {
         if (accounts.size() > 0) {
-            currentAccount = (currentAccount - 1 + accounts.size()) % accounts.size(); // Circular decrement
+            currentAccount = (currentAccount - 1 + accounts.size()) % accounts.size(); 
             return accounts.get(currentAccount);
         }
-        return null; // Return null if no accounts are available
+        return null; 
     }
 
     // Set the current account based on accountID (to facilitate searching by account ID)
     public void setCurrentAccount(String accountID) {
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts.get(i).getAccountID().equals(accountID)) {
-                currentAccount = i; // Update the current account index to match the found account
+                currentAccount = i; 
                 break;
             }
         }

@@ -1,16 +1,16 @@
 package cqu.customeraccountmanagement;
 
 public class DailyAccessAccount extends Account {
-    private double balance;            // The current balance of the account
-    private double minimumBalance;     // The minimum balance since the last interest was applied
-    private double interestEarned;     // The last interest earned
+    private double balance;            
+    private double minimumBalance;    
+    private double interestEarned;    
 
     // Constructor
     public DailyAccessAccount(String accountID, String customerID, double interestRate, double balance) {
         super(accountID, customerID, "Daily Access", interestRate);
         this.balance = balance;
-        this.minimumBalance = balance; // Initially, the minimum balance is the same as the current balance
-        this.interestEarned = 0.0;     // No interest earned initially
+        this.minimumBalance = balance; 
+        this.interestEarned = 0.0;     
     }
 
     // Get detailed information about the account using StringBuilder
@@ -20,7 +20,7 @@ public class DailyAccessAccount extends Account {
         sb.append(String.format("Current Balance: $%.2f%n", balance));
         sb.append(String.format("Minimum Balance: $%.2f%n", minimumBalance));
         sb.append(String.format("Last Interest Earned: $%.2f%n", interestEarned));
-        sb.append(String.format("Annual Interest Rate: %.2f%%%n", getMonthlyInterestRate() * 12 * 100)); // Convert monthly to annual rate
+        sb.append(String.format("Annual Interest Rate: %.2f%%%n", getMonthlyInterestRate() * 12 * 100)); 
         return sb.toString();
     }
 
@@ -29,9 +29,9 @@ public class DailyAccessAccount extends Account {
     public void applyMonthlyInterest() {
         // Interest is calculated based on the minimum balance since last interest calculation
         double interest = minimumBalance * getMonthlyInterestRate();
-        interestEarned = interest; // Store the earned interest
-        balance += interest;       // Add the earned interest to the current balance
-        minimumBalance = balance;  // Reset the minimum balance to the new balance after interest is applied
+        interestEarned = interest; 
+        balance += interest;       
+        minimumBalance = balance;  
     }
 
     // Deposit money to the account
@@ -40,7 +40,7 @@ public class DailyAccessAccount extends Account {
         if (amount <= 0) {
             throw new IllegalArgumentException("Deposit amount must be greater than 0");
         }
-        balance += amount; // Add deposit to balance
+        balance += amount; 
     }
 
     // Withdraw money from the account
@@ -52,7 +52,7 @@ public class DailyAccessAccount extends Account {
         if (balance - amount < 0) {
             throw new IllegalArgumentException("Insufficient funds for this withdrawal");
         }
-        balance -= amount; // Deduct withdrawal from balance
+        balance -= amount; 
         
         // If the new balance is less than the previous minimum balance, update the minimum balance
         if (balance < minimumBalance) {

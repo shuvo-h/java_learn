@@ -1,16 +1,16 @@
 package cqu.customeraccountmanagement;
 
 public class GoalSaverAccount extends Account {
-    private double balance;                // The current balance in the account
-    private double startOfMonthBalance;    // Balance at the start of the month (for interest eligibility)
-    private double interestEarned;         // The last amount of interest earned
+    private double balance;                
+    private double startOfMonthBalance;    
+    private double interestEarned;         
 
     // Constructor
     public GoalSaverAccount(String accountID, String customerID, double interestRate, double balance) {
         super(accountID, customerID, "Goal Saver", interestRate);
         this.balance = balance;
-        this.startOfMonthBalance = balance; // Initially, the start of month balance is the same as the current balance
-        this.interestEarned = 0.0;          // No interest earned initially
+        this.startOfMonthBalance = balance; 
+        this.interestEarned = 0.0;         
     }
 
     // Get detailed information about the account using StringBuilder
@@ -31,11 +31,11 @@ public class GoalSaverAccount extends Account {
         if (balance >= startOfMonthBalance + 500) {
             double interest = balance * getMonthlyInterestRate();
             interestEarned = interest;
-            balance += interest; // Add interest to the current balance
+            balance += interest; 
         } else {
-            interestEarned = 0; // No interest earned if the balance growth condition is not met
+            interestEarned = 0;
         }
-        // Reset the startOfMonthBalance after interest is calculated
+        
         startOfMonthBalance = balance;
     }
 
@@ -45,7 +45,7 @@ public class GoalSaverAccount extends Account {
         if (amount <= 0) {
             throw new IllegalArgumentException("Deposit amount must be greater than 0");
         }
-        balance += amount; // Add deposit to balance
+        balance += amount; 
     }
 
     // Withdraw money from the account
@@ -57,7 +57,7 @@ public class GoalSaverAccount extends Account {
         if (balance - amount < 0) {
             throw new IllegalArgumentException("Insufficient funds for this withdrawal");
         }
-        balance -= amount; // Deduct withdrawal from balance
+        balance -= amount; 
     }
 
     // Getter for current balance

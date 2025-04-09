@@ -1,10 +1,10 @@
 package cqu.customeraccountmanagement;
 
 public abstract class Account {
-    private String accountID;           // Unique account ID
-    private String type;                // Type of account (e.g., Home Loan, Daily Access, Goal Saver)
-    private double monthlyInterestRate; // Monthly interest rate for the account
-    private String customerID;          // The ID of the customer who owns the account
+    private String accountID;          
+    private String type;                
+    private double monthlyInterestRate; 
+    private String customerID;          
 
     // Constructor to initialize the account details
     public Account(String accountID, String customerID, String type, double rate) {
