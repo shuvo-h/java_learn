@@ -19,17 +19,116 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
-        
+
             /// Start threads for each sensor
-        new Thread(new SensorTask(sliderTemp, labelTempAlarm, labelTempActuator, 15, 25, 20, "Temperature")).start();
-        new Thread(new SensorTask(sliderHumidity, labelHumidityAlarm, labelHumidityActuator, 60, 80, 70, "Humidity")).start();
-        new Thread(new SensorTask(sliderMoisture, labelMoistureAlarm, labelMoistureActuator, 20, 30, 25, "Moisture")).start();
-        new Thread(new SensorTask(sliderLight, labelLightAlarm, labelLightActuator, 20000, 40000, 30000, "Light")).start();
+        // new Thread(new SensorTask(sliderTemp, labelTempAlarm, labelTempActuator, 15, 25, 20, "Temperature")).start();
+        // new Thread(new SensorTask(sliderHumidity, labelHumidityAlarm, labelHumidityActuator, 60, 80, 70, "Humidity")).start();
+        // new Thread(new SensorTask(sliderMoisture, labelMoistureAlarm, labelMoistureActuator, 20, 30, 25, "Moisture")).start();
+        // new Thread(new SensorTask(sliderLight, labelLightAlarm, labelLightActuator, 20000, 40000, 30000, "Light")).start();
+
+          // Start each sensor with respective config
+        new Thread(new SensorTask(sliderTemp, labelTempAlarm, labelTempActuator, 15, 25, 20, "Temperature", false)).start();
+        new Thread(new SensorTask(sliderHumidity, labelHumidityAlarm, labelHumidityActuator, 60, 80, 70, "Humidity", false)).start();
+        new Thread(new SensorTask(sliderMoisture, labelMoistureAlarm, labelMoistureActuator, 20, 30, 25, "Moisture", false)).start();
+        new Thread(new SensorTask(sliderLight, labelLightAlarm, labelLightActuator, 20000, 40000, 30000, "Light", true)).start();
+    
+
+    }
 
 
+
+    
+    
+    
+    class SensorTask implements Runnable {
+        private final JSlider slider;
+        private final JLabel alarmLabel;
+        private final JLabel actuatorLabel;
+        private final int minIdeal, maxIdeal, perfectValue;
+        private final String type;
+        private final boolean isKilo; // True for Light only
+
+        public SensorTask(JSlider slider, JLabel alarmLabel, JLabel actuatorLabel,
+                          int minIdeal, int maxIdeal, int perfectValue, String type, boolean isKilo) {
+            this.slider = slider;
+            this.alarmLabel = alarmLabel;
+            this.actuatorLabel = actuatorLabel;
+            this.minIdeal = minIdeal;
+            this.maxIdeal = maxIdeal;
+            this.perfectValue = perfectValue;
+            this.type = type;
+            this.isKilo = isKilo;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    int sliderValue = slider.getValue(); // 10–50 for Light (kLux)
+                    int actualValue = isKilo ? sliderValue * 1000 : sliderValue; // Convert to lux
+
+                    // Logic: compare in actual scale (lux or raw)
+                    if (actualValue >= minIdeal && actualValue <= maxIdeal) {
+                        alarmLabel.setText("Normal");
+                        alarmLabel.setBackground(Color.GREEN);
+                        alarmLabel.setOpaque(true);
+
+                        if (actualValue == perfectValue) {
+                            actuatorLabel.setText(type + " Control Off");
+                        }
+                    } else {
+                        // Out of ideal range
+                        if (actualValue < minIdeal) {
+                            alarmLabel.setText(type + " too Low!");
+                            actuatorLabel.setText(getActuatorLabel("low"));
+                        } else {
+                            alarmLabel.setText(type + " too High!");
+                            actuatorLabel.setText(getActuatorLabel("high"));
+                        }
+
+                        alarmLabel.setBackground(Color.RED);
+                        alarmLabel.setOpaque(true);
+
+                        // Auto-adjust slider toward perfectValue (using slider scale)
+                        new Thread(() -> {
+                            try {
+                                int perfectSlider = isKilo ? perfectValue / 1000 : perfectValue;
+                                while (slider.getValue() != perfectSlider) {
+                                    int current = slider.getValue();
+                                    slider.setValue(current < perfectSlider ? current + 1 : current - 1);
+                                    Thread.sleep(3000);
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
+                    }
+
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private String getActuatorLabel(String direction) {
+            return switch (type) {
+                case "Temperature" -> direction.equals("low") ? "Heating On" : "Cooling On";
+                case "Humidity" -> direction.equals("low") ? "Humidifier On" : "Ventilation On";
+                case "Moisture" -> direction.equals("low") ? "Irrigation On" : "Aeration On";
+                case "Light" -> direction.equals("low") ? "Brightening On" : "Dimming On";
+                default -> "Control On";
+            };
+        }
     }
     
     
+    
+    
+    
+
+
+    /*
     class SensorTask implements Runnable {
         private final JSlider slider;
         private final JLabel alarmLabel;
@@ -114,7 +213,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
     }
-
+    */
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -158,6 +257,8 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(64, 107, 173));
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 50));
 
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("Dashboard");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -165,153 +266,204 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(300, 300, 300)
+                .addGap(308, 308, 308)
                 .addComponent(jLabel13)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(15, 15, 15)
                 .addComponent(jLabel13)
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        jLabel1.setText("Temprature");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel1.setText("Temprature (°C)");
 
+        sliderTemp.setMajorTickSpacing(5);
         sliderTemp.setMaximum(30);
         sliderTemp.setMinimum(10);
+        sliderTemp.setMinorTickSpacing(1);
+        sliderTemp.setPaintLabels(true);
+        sliderTemp.setPaintTicks(true);
         sliderTemp.setValue(20);
         sliderTemp.setName("sliderTemp"); // NOI18N
 
-        jLabel2.setText("Humidity");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Humidity (% RH)");
 
-        jLabel3.setText("Moisture");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("Moisture (% VWC)");
 
-        jLabel4.setText("Light");
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setText("Light (Klux)");
 
+        sliderHumidity.setMajorTickSpacing(5);
         sliderHumidity.setMaximum(90);
         sliderHumidity.setMinimum(50);
+        sliderHumidity.setMinorTickSpacing(1);
+        sliderHumidity.setPaintLabels(true);
+        sliderHumidity.setPaintTicks(true);
         sliderHumidity.setValue(70);
         sliderHumidity.setName("sliderHumidity"); // NOI18N
 
+        sliderMoisture.setMajorTickSpacing(5);
         sliderMoisture.setMaximum(40);
         sliderMoisture.setMinimum(10);
+        sliderMoisture.setMinorTickSpacing(1);
+        sliderMoisture.setPaintLabels(true);
+        sliderMoisture.setPaintTicks(true);
         sliderMoisture.setValue(25);
         sliderMoisture.setName("sliderMoisture"); // NOI18N
 
-        sliderLight.setMaximum(50000);
-        sliderLight.setMinimum(10000);
-        sliderLight.setValue(30000);
+        sliderLight.setMajorTickSpacing(5);
+        sliderLight.setMaximum(50);
+        sliderLight.setMinimum(10);
+        sliderLight.setMinorTickSpacing(1);
+        sliderLight.setPaintLabels(true);
+        sliderLight.setPaintTicks(true);
+        sliderLight.setValue(30);
         sliderLight.setName("sliderLight"); // NOI18N
 
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel7.setText("Alarm");
 
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel8.setText("Actuator");
 
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel9.setText("Alarm");
 
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel10.setText("Actuator");
 
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel11.setText("Alarm");
 
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel12.setText("Actuator");
 
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Alarm");
 
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel6.setText("Actuator");
 
+        labelTempAlarm.setBackground(new java.awt.Color(255, 255, 255));
+        labelTempAlarm.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelTempAlarm.setForeground(new java.awt.Color(0, 153, 51));
         labelTempAlarm.setText("Normal");
+        labelTempAlarm.setPreferredSize(new java.awt.Dimension(60, 16));
 
+        labelTempActuator.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelTempActuator.setText("Temperature Control Off");
 
+        labelHumidityAlarm.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelHumidityAlarm.setForeground(new java.awt.Color(0, 153, 51));
         labelHumidityAlarm.setText("Normal");
 
+        labelHumidityActuator.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelHumidityActuator.setText("Humidity Control Off");
 
+        labelMoistureAlarm.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelMoistureAlarm.setForeground(new java.awt.Color(0, 153, 51));
         labelMoistureAlarm.setText("Normal");
 
+        labelLightAlarm.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        labelLightAlarm.setForeground(new java.awt.Color(0, 153, 51));
         labelLightAlarm.setText("Normal");
 
+        labelMoistureActuator.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelMoistureActuator.setText("Moisture Control Off");
 
+        labelLightActuator.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         labelLightActuator.setText("Light Control Off");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(sliderTemp, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel4)
-                                .addComponent(jLabel2)
+                            .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel9)
-                                    .addComponent(jLabel3))
-                                .addComponent(jLabel11))
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel5))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11))
+                                .addGap(55, 55, 55))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(68, 68, 68)
-                                .addComponent(labelHumidityAlarm)
-                                .addGap(140, 140, 140)
-                                .addComponent(jLabel8)
-                                .addGap(84, 84, 84)
-                                .addComponent(labelHumidityActuator))
+                                .addComponent(jLabel7)
+                                .addGap(52, 52, 52))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(51, 51, 51)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addGap(52, 52, 52))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(labelLightAlarm)
-                                        .addGap(156, 156, 156)
                                         .addComponent(jLabel12)
-                                        .addGap(99, 99, 99)
-                                        .addComponent(labelLightActuator))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(15, 15, 15)
-                                        .addComponent(labelMoistureAlarm)
-                                        .addGap(145, 145, 145)
-                                        .addComponent(jLabel10)
-                                        .addGap(93, 93, 93)
-                                        .addComponent(labelMoistureActuator))
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(sliderMoisture, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
-                                        .addComponent(sliderHumidity, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(sliderLight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(15, 15, 15)
-                                            .addComponent(labelTempAlarm)
-                                            .addGap(146, 146, 146)
-                                            .addComponent(jLabel6)
-                                            .addGap(67, 67, 67)
-                                            .addComponent(labelTempActuator))))))))
-                .addContainerGap(82, Short.MAX_VALUE))
+                                        .addGap(33, 33, 33)
+                                        .addComponent(labelLightActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(labelLightAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(sliderMoisture, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(sliderHumidity, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(sliderLight, javax.swing.GroupLayout.PREFERRED_SIZE, 614, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(labelMoistureAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel10)
+                                                .addGap(39, 39, 39)
+                                                .addComponent(labelMoistureActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(labelHumidityAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel8)
+                                                .addGap(38, 38, 38)
+                                                .addComponent(labelHumidityActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(36, 36, 36)
+                                .addComponent(labelTempAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addGap(42, 42, 42)
+                                .addComponent(labelTempActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(11, 11, 11))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                        .addComponent(sliderTemp, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(42, 42, 42))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(36, 36, 36)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sliderTemp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6)
-                    .addComponent(labelTempAlarm)
-                    .addComponent(labelTempActuator))
-                .addGap(39, 39, 39)
+                .addGap(31, 31, 31)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(labelTempActuator, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6))
+                        .addGap(31, 31, 31))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(labelTempAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(35, 35, 35)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(sliderHumidity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -319,19 +471,23 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(jLabel8)
-                    .addComponent(labelHumidityAlarm)
-                    .addComponent(labelHumidityActuator))
-                .addGap(73, 73, 73)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(sliderMoisture, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(46, 46, 46)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10)
-                    .addComponent(labelMoistureAlarm)
-                    .addComponent(labelMoistureActuator))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
+                    .addComponent(labelHumidityAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelHumidityActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(57, 57, 57)
+                        .addComponent(jLabel3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(sliderMoisture, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(26, 26, 26)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelMoistureActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10)
+                        .addComponent(jLabel9))
+                    .addComponent(labelMoistureAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(sliderLight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -339,8 +495,8 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
                     .addComponent(jLabel12)
-                    .addComponent(labelLightAlarm)
-                    .addComponent(labelLightActuator))
+                    .addComponent(labelLightActuator, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelLightAlarm, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31))
         );
 
@@ -354,7 +510,7 @@ public class MainFrame extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
